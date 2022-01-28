@@ -4,27 +4,32 @@ using UnityEngine;
 
 public class Driver : MonoBehaviour
 {
-    [SerializeField] float steerSpeed = 1f;
-    [SerializeField] float moveSpeed = 20f;
-    [SerializeField] float slowSpeed = 20f;
-    [SerializeField] float boostSpeed = 30f;
+    [SerializeField] float moveSpeed = 2f;
+    [SerializeField] float turnSpeed = 10f;
+    [SerializeField] float boost = 20f;
+    [SerializeField] float slower = 20f;
 
-    void Update()
+    void FixedUpdate()
     {
-       float steerAmount = Input.GetAxis("Horizontal") * steerSpeed * Time.deltaTime; 
-       float moveAmount = Input.GetAxis("Vertical") * moveSpeed * Time.deltaTime; 
-
-       transform.Rotate(0, 0, -steerAmount);
-       transform.Translate(0, moveAmount, 0);
+        Move();
     }
 
-    private void OnCollisionEnter2D(Collision2D other) {
-        moveSpeed = slowSpeed;
+    void Move(){
+        float driverMove = Input.GetAxis("Vertical") * moveSpeed * Time.deltaTime;
+        float driverTurn = Input.GetAxis("Horizontal") * turnSpeed * Time.deltaTime;
+
+        transform.Translate(0, driverMove, 0);
+        transform.Rotate(0, 0, -driverTurn);
     }
 
     private void OnTriggerEnter2D(Collider2D other) {
         if(other.tag == "Boost"){
-            moveSpeed = boostSpeed;
+            moveSpeed += boost;
+            Invoke("slowMobil", 0.5f);
         }
+    }
+
+    void slowMobil(){
+        moveSpeed -= slower;
     }
 }
